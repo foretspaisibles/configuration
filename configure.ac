@@ -18,6 +18,7 @@ AC_INIT([meta/configuration.in])
 AC_CONFIG_MACRO_DIR([Library/Autoconf])
 AC_NEED_OCAML
 AC_NEED_FINDLIB
+AC_NEED_FINDLIB_PKG([broken])
 AC_WITH_OCAML_SITE_LIB
 AC_CONFIG_FILES([Makefile.config meta/configuration])
 AC_OUTPUT
