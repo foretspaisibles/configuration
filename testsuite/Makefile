@@ -3,10 +3,10 @@
 # Author: Michael Grünewald
 # Date: Tue Nov  5 22:54:56 CET 2013
 
-# GIT-Toolkit (https://github.com/michipili/gasoline)
-# This file is part of Gasoline
+# Configuration (https://github.com/michipili/configuration)
+# This file is part of Configuration
 #
-# Copyright © 2013 Michael Grünewald
+# Copyright © 2012–2015 Michael Grünewald
 #
 # This file must be used under the terms of the CeCILL-B.
 # This source file is licensed as described in the file COPYING, which
@@ -17,9 +17,9 @@
 SUBDIR+=	unit-testing
 SUBDIR+=	trip-trap
 
-install build:
+install:
 	${NOP}
 
-.include "gasoline.subdir.mk"
+.include "generic.subdir.mk"
 
 ### End of file `Makefile'

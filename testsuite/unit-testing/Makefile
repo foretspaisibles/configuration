@@ -3,10 +3,10 @@
 # Author: Michael Grünewald
 # Date: Mon Apr 14 23:52:37 CEST 2014
 
-# GIT-Toolkit (https://github.com/michipili/gasoline)
-# This file is part of Gasoline
+# Configuration (https://github.com/michipili/configuration)
+# This file is part of Configuration
 #
-# Copyright © 2014 Michael Grünewald
+# Copyright © 2012–2015 Michael Grünewald
 #
 # This file must be used under the terms of the CeCILL-B.
 # This source file is licensed as described in the file COPYING, which
@@ -14,20 +14,17 @@
 # are also available at
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.txt
 
-SRCS+=		testUnitTest.ml
-SRCS+=		testUnicode.ml
-SRCS+=		testCTypeValue.ml
-SRCS+=		testConfigurationMap.ml
+PROGRAM=	unit_testing
 
+SRCS+=		testConfigurationMap.ml
 SRCS+=		main.ml
 
-PKGS+=		unix
+do-test: build
+	${PROGRAM:tA}
 
-OCAMLLFLAGS+=	-linkall
+do-install:
+	${NOP}
 
-test: all
-	./unit-testing
-
-.include "gasoline.program.mk"
+.include "ocaml.prog.mk"
 
 ### End of file `Makefile'

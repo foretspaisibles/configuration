@@ -3,10 +3,10 @@
 # Author: Michael Grünewald
 # Date: Sat Dec 27 11:37:01 CET 2014
 
-# Gasoline (https://github.com/michipili/gasoline)
-# This file is part of Gasoline
+# Configuration (https://github.com/michipili/configuration)
+# This file is part of Configuration
 #
-# Copyright © 2013 Michael Grünewald
+# Copyright © 2012–2015 Michael Grünewald
 #
 # This file must be used under the terms of the CeCILL-B.
 # This source file is licensed as described in the file COPYING, which

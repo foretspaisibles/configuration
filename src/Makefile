@@ -1,7 +1,7 @@
-### Makefile -- Configuration
+### Makefile -- Functional configuration parser
 
 # Author: Michael Grünewald
-# Date: Tue Nov  5 22:37:27 CET 2013
+# Date: Sat Dec 28 13:07:19 CET 2013
 
 # Configuration (https://github.com/michipili/configuration)
 # This file is part of Configuration
@@ -14,21 +14,11 @@
 # are also available at
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.txt
 
-PACKAGE=		configuration
-VERSION=		0.2.1-current
-OFFICER=		michipili@gmail.com
+LIBRARY=		configuration
 
-MODULE=			ocaml.lib:src
-MODULE+=		ocaml.meta:meta
-MODULE+=		ocaml.manual:manual
+SRCS+=			configuration_Parser.mll
+SRCS+=			configuration_Map.ml
 
-SUBDIR=			testsuite
-
-EXTERNAL=		ocaml.findlib:broken
-
-CONFIGURE=		meta/configuration.in
-CONFIGURE+=		Makefile.config.in
-
-.include "generic.project.mk"
+.include "ocaml.lib.mk"
 
 ### End of file `Makefile'
