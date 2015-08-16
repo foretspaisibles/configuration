@@ -1,7 +1,7 @@
-### Makefile -- META
+### Makefile -- Functional configuration parser
 
 # Author: Michael Grünewald
-# Date: Thu Nov  7 07:46:37 CET 2013
+# Date: Sat Dec 28 13:07:19 CET 2013
 
 # Configuration (https://github.com/michipili/configuration)
 # This file is part of Configuration
@@ -14,8 +14,11 @@
 # are also available at
 # http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.txt
 
-META=			configuration
+LIBRARY=		configuration
 
-.include "ocaml.meta.mk"
+SRCS+=			configuration_Parser.mll
+SRCS+=			configuration_Map.ml
+
+.include "ocaml.lib.mk"
 
 ### End of file `Makefile'

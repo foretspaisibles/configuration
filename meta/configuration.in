@@ -1,0 +1,5 @@
+name="configuration"
+version="@VERSION@"
+description="Analyse configuration files"
+archive(byte) = "configuration.cma"
+archive(native) = "configuration.cmxa"
