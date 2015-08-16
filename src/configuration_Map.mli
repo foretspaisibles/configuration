@@ -10,6 +10,7 @@
    you should have received as part of this distribution. The terms
    are also available at
    http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.txt *)
+
 (** Configuration maps.
 
     A configuration map holds a dictionary mapping configuration keys to
@@ -41,12 +42,20 @@ type 'a key = {
   description: string;
 }
 
-(** The abstract type of configuration callbacks. *)
-type callback
+(** The abstract type of functional configuration editors,
+    functionally editing a value of type ['b]. *)
+type 'b editor
 
-(** [callback key callback] create a configuration callback consuming keys
-    described by [key] with the given [callback]. *)
-val callback : 'a key -> ('a -> unit) -> callback
+(** [xmap get set editor] convert an editor functionally modifying a
+    value of type ['b] in an editor functionally modifying a value of type
+    ['a].  This can be used in conjunction with lenses to separately
+    configure the different modules of an application. *)
+val xmap : ('a -> 'b) -> ('b -> 'a -> 'a) -> 'b editor -> 'a editor
+
+(** [editor key edit] create a functional configuration editor consuming
+    keys described by [key] and functionally editing a value of type
+    ['b] with [edit]. *)
+val editor : 'a key -> ('a -> 'b -> 'b) -> 'b editor
 
 (** [key concrete path name default description] create a key
     out of its given parts. *)
@@ -56,8 +65,8 @@ val key : ('a concrete) -> string list -> string -> 'a -> string -> 'a key
     default value from the key is returned. *)
 val get : t -> 'a key -> 'a
 
-(** Explicitely consume the given value with the provided callback. *)
-val apply : t -> callback -> unit
+(** Explicitely edit the given value with the provided editor. *)
+val apply : t -> 'b editor -> 'b -> 'b
 
 (** [value key text] get the value associated to [text] as if it
     were assigned to [key]. *)
