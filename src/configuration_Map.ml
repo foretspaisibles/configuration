@@ -72,13 +72,13 @@ sig
     default: 'a;
     description: string;
   }
+  val key : ('a concrete) -> string list -> string -> 'a -> string -> 'a key
+  val get : t -> 'a key -> 'a
+  val value : 'a key -> string -> 'a
   type 'b editor
   val xmap : ('a -> 'b) -> ('b -> 'a -> 'a) -> 'b editor -> 'a editor
   val editor : 'a key -> ('a -> 'b -> 'b) -> 'b editor
-  val key : ('a concrete) -> string list -> string -> 'a -> string -> 'a key
-  val get : t -> 'a key -> 'a
   val apply : t -> 'b editor -> 'b -> 'b
-  val value : 'a key -> string -> 'a
   val empty : t
   val add : t -> (string list * string) -> string -> t
   val merge : t -> t -> t
