@@ -10,6 +10,7 @@
    you should have received as part of this distribution. The terms
    are also available at
    http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.txt *)
+
 open Printf
 
 let path_to_string p k =
@@ -33,9 +34,9 @@ struct
   let string_chars s =
     let rec loop ax i =
       if i < 0 then
-	ax
+        ax
       else
-	loop (s.[i] :: ax) (i-1)
+        loop (s.[i] :: ax) (i-1)
     in
     loop [] (String.length s - 1)
 
@@ -71,12 +72,13 @@ sig
     default: 'a;
     description: string;
   }
-  type callback
-  val callback : 'a key -> ('a -> unit) -> callback
   val key : ('a concrete) -> string list -> string -> 'a -> string -> 'a key
   val get : t -> 'a key -> 'a
-  val apply : t -> callback -> unit
   val value : 'a key -> string -> 'a
+  type 'b editor
+  val xmap : ('a -> 'b) -> ('b -> 'a -> 'a) -> 'b editor -> 'a editor
+  val editor : 'a key -> ('a -> 'b -> 'b) -> 'b editor
+  val apply : t -> 'b editor -> 'b -> 'b
   val empty : t
   val add : t -> (string list * string) -> string -> t
   val merge : t -> t -> t
@@ -113,12 +115,18 @@ struct
     description: string;
   }
 
-  type callback = {
-    callback_path: string list;
-    callback_name: string;
-    callback_description: string;
-    callback_f: t -> unit;
+  type 'b editor = {
+    editor_path: string list;
+    editor_name: string;
+    editor_description: string;
+    editor_f: t -> 'b -> 'b;
   }
+
+  let xmap get set editor =
+    let editor_f conf x =
+      set (editor.editor_f conf (get x)) x
+    in
+    { editor with editor_f }
 
   let key c p k def des = {
     concrete = c;
@@ -161,19 +169,19 @@ struct
     with
     | Not_found -> use_default key
 
-  let callback key cb =
-    let callback_f conf =
-      cb (get conf key)
+  let editor key edit =
+    let editor_f conf =
+      edit (get conf key)
     in
     {
-      callback_path = key.path;
-      callback_name = key.name;
-      callback_description = key.description;
-      callback_f;
+      editor_path = key.path;
+      editor_name = key.name;
+      editor_description = key.description;
+      editor_f;
     }
 
-  let apply conf callback =
-    callback.callback_f conf
+  let apply conf editor =
+    editor.editor_f conf
 
   let empty = []
 
@@ -188,9 +196,9 @@ struct
     | [] -> List.rev ax
     | (k,v)::t -> (
         if List.mem_assoc k b then
-	  override_loop t b ((k, List.assoc k b) :: ax)
+          override_loop t b ((k, List.assoc k b) :: ax)
         else
-	  override_loop t b ((k,v) :: ax)
+          override_loop t b ((k,v) :: ax)
       )
 
   let override a b =
@@ -203,23 +211,23 @@ struct
     type configuration = t
 
     type t = {
-      mutable path: string list;
-      mutable conf: configuration;
+      path: string list;
+      conf: configuration;
     }
 
-    let comment _ _ = ()
+    let comment _ state = state
 
-    let section p l =
-      p.path <- List.map Configuration_Parser.text l
+    let section l state =
+      { state with path = List.map Configuration_Parser.text l }
 
-    let binding p k v =
-      let path = path_to_string p.path (Configuration_Parser.text k) in
+    let binding k v state =
+      let path = path_to_string state.path (Configuration_Parser.text k) in
       let text = Configuration_Parser.text v in
       let pos = Configuration_Parser.startpos v in
-      p.conf <- (path, (text, pos)) :: p.conf
+      { state with conf = (path, (text, pos)) :: state.conf }
 
-    let parse_error p pos error =
-      M.parse_error pos (Configuration_Parser.error_to_string error)
+    let parse_error pos error state =
+      (M.parse_error pos (Configuration_Parser.error_to_string error); state)
   end
 
   module Parser = Configuration_Parser.Make(Parser_definition)
@@ -231,8 +239,7 @@ struct
       conf = [];
     } in
     begin
-      f p x;
-      List.rev p.Parser_definition.conf
+      List.rev (f x p).Parser_definition.conf
     end
 
   let from_file =

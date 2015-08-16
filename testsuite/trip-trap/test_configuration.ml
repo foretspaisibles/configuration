@@ -39,22 +39,22 @@ struct
       endline endcol
       tag text
 
-  let comment _ exc =
+  let comment exc () =
     print_endline (excerpt_to_string "COMMENT" exc)
 
-  let section _ path =
+  let section path () =
     let process exc =
       print_endline (excerpt_to_string "PATH_ELT" exc)
     in
     List.iter process path
 
-  let binding _ key value =
+  let binding key value () =
     begin
       print_endline (excerpt_to_string "KEY" key);
       print_endline (excerpt_to_string "VALUE" value);
     end
 
-  let parse_error _ errpos error =
+  let parse_error errpos error () =
     let errline, errcol =
       pos_to_lc errpos
     in
@@ -68,4 +68,4 @@ module ConfigurationLogger =
   Configuration_Parser.Make(Logger)
 
 
-let () = ConfigurationLogger.parse_file () Sys.argv.(1)
+let () = ConfigurationLogger.parse_file Sys.argv.(1) ()
