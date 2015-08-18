@@ -69,7 +69,7 @@ Configuration maps can also be extended and combined together:
 val empty : t
 
 (** Add a configuration binding. *)
-val add : t -> (string list * string) -> string -> t
+val add : (string list * string) -> string -> t -> t
 
 (** [merge a b] is a configuration map looking up values in [a] then
     in [b]. *)

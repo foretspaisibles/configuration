@@ -82,7 +82,7 @@ val apply : t -> 'b editor -> 'b -> 'b
 val empty : t
 
 (** Add a configuration binding. *)
-val add : t -> (string list * string) -> string -> t
+val add : (string list * string) -> string -> t -> t
 
 (** [merge a b] a configuration map looking up values in [a] then
     in [b]. *)

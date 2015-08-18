@@ -80,7 +80,7 @@ sig
   val editor : 'a key -> ('a -> 'b -> 'b) -> 'b editor
   val apply : t -> 'b editor -> 'b -> 'b
   val empty : t
-  val add : t -> (string list * string) -> string -> t
+  val add : (string list * string) -> string -> t -> t
   val merge : t -> t -> t
   val override : t -> t -> t
   val from_file : string -> t
@@ -185,7 +185,7 @@ struct
 
   let empty = []
 
-  let add a (p,k) v =
+  let add (p,k) v a =
     (path_to_string p k, (v, Lexing.dummy_pos)) :: a
 
   let merge a b =
@@ -249,7 +249,7 @@ struct
     from_anything Parser.parse_string
 
   let from_alist a =
-    let loop c (k,v) = add c k v in
+    let loop c (k,v) = add k v c in
     List.fold_left loop empty a
 end
 
