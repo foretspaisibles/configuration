@@ -46,8 +46,10 @@ type 'a key = {
     out of its given parts. *)
 val key : ('a concrete) -> string list -> string -> 'a -> string -> 'a key
 
-(** Get the value associated with an key.  On error conditions, the
-    default value from the key is returned. *)
+(** Get the value associated with an key.  If there is no associated
+    value, then the default value from the key is returned.
+
+    @raise Failure if the value cannot be formatted. *)
 val get : t -> 'a key -> 'a
 
 (** [value key text] get the value associated to [text] as if it
