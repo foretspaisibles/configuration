@@ -310,14 +310,14 @@ struct
   let value_error path name pos text mesg =
     match location pos with
     | File(filename, line) ->
-        failprintf "Bad %s value '%s' for '%s' in '%s'."
-          mesg text (path_to_string path name) filename
+        failprintf "Bad %s value '%s' for '%s' in '%s' line %d."
+          mesg text (path_to_string path name) filename line
     | Undefined ->
         failprintf "Bad %s value '%s' for '%s'."
           mesg text (path_to_string path name)
 
   let uncaught_exn path name pos text exn =
-    eprintf "ConfigurationMap.uncaught_exn: %s: %s\n"
+    eprintf "Configuration_Map.uncaught_exn: %s: %s\n"
       (path_to_string path name) (Printexc.to_string exn)
 
   let default path name value =
