@@ -46,8 +46,10 @@ type 'a key = {
     out of its given parts. *)
 val key : ('a concrete) -> string list -> string -> 'a -> string -> 'a key
 
-(** Get the value associated with an key.  On error conditions, the
-    default value from the key is returned. *)
+(** Get the value associated with an key.  If there is no associated
+    value, then the default value from the key is returned.
+
+    @raise Failure if the value cannot be formatted. *)
 val get : t -> 'a key -> 'a
 
 (** [value key text] get the value associated to [text] as if it
@@ -82,7 +84,7 @@ val apply : t -> 'b editor -> 'b -> 'b
 val empty : t
 
 (** Add a configuration binding. *)
-val add : t -> (string list * string) -> string -> t
+val add : (string list * string) -> string -> t -> t
 
 (** [merge a b] a configuration map looking up values in [a] then
     in [b]. *)

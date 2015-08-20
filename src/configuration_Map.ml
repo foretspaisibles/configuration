@@ -80,7 +80,7 @@ sig
   val editor : 'a key -> ('a -> 'b -> 'b) -> 'b editor
   val apply : t -> 'b editor -> 'b -> 'b
   val empty : t
-  val add : t -> (string list * string) -> string -> t
+  val add : (string list * string) -> string -> t -> t
   val merge : t -> t -> t
   val override : t -> t -> t
   val from_file : string -> t
@@ -185,7 +185,7 @@ struct
 
   let empty = []
 
-  let add a (p,k) v =
+  let add (p,k) v a =
     (path_to_string p k, (v, Lexing.dummy_pos)) :: a
 
   let merge a b =
@@ -249,7 +249,7 @@ struct
     from_anything Parser.parse_string
 
   let from_alist a =
-    let loop c (k,v) = add c k v in
+    let loop c (k,v) = add k v c in
     List.fold_left loop empty a
 end
 
@@ -273,19 +273,19 @@ end
 module Verbose =
 struct
   let value_error path name pos text mesg =
-    eprintf "ConfigurationMap.value_error: '%s' for '%s' in %s'"
+    eprintf "Configuration_Map.value_error: '%s' for '%s' in %s'"
       text (path_to_string path name) pos.Lexing.pos_fname
 
   let uncaught_exn path name pos text exn =
-    eprintf "ConfigurationMap.uncaught_exn: %s: %s\n"
+    eprintf "Configuration_Map.uncaught_exn: %s: %s\n"
       (path_to_string path name) (Printexc.to_string exn)
 
   let default path name value =
-    eprintf "ConfigurationMap.default: %s: %s\n"
+    eprintf "Configuration_Map.default: %s: %s\n"
       (path_to_string path name) value
 
   let parse_error pos message =
-    eprintf "ConfigurationMap.parse_error: \
+    eprintf "Configuration_Map.parse_error: \
              syntax error in configuration file '%s' on line %d."
       pos.Lexing.pos_fname pos.Lexing.pos_lnum
 end
@@ -310,14 +310,14 @@ struct
   let value_error path name pos text mesg =
     match location pos with
     | File(filename, line) ->
-        failprintf "Bad %s value '%s' for '%s' in '%s'."
-          mesg text (path_to_string path name) filename
+        failprintf "Bad %s value '%s' for '%s' in '%s' line %d."
+          mesg text (path_to_string path name) filename line
     | Undefined ->
         failprintf "Bad %s value '%s' for '%s'."
           mesg text (path_to_string path name)
 
   let uncaught_exn path name pos text exn =
-    eprintf "ConfigurationMap.uncaught_exn: %s: %s\n"
+    eprintf "Configuration_Map.uncaught_exn: %s: %s\n"
       (path_to_string path name) (Printexc.to_string exn)
 
   let default path name value =
