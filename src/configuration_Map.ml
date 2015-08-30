@@ -54,25 +54,21 @@ sig
     Lexing.position -> string -> string -> unit
   val uncaught_exn : string list -> string ->
     Lexing.position -> string -> exn -> unit
-  val default : string list -> string -> string -> unit
+  val default : string list -> string -> unit
   val parse_error : Lexing.position -> string -> unit
 end
 
 module type S =
 sig
   type t
-  type 'a concrete = {
-    of_string: string -> 'a;
-    to_string: 'a -> string;
-  }
   type 'a key = {
-    concrete: 'a concrete;
+    of_string: string -> 'a;
     path: string list;
     name: string;
     default: 'a;
     description: string;
   }
-  val key : ('a concrete) -> string list -> string -> 'a -> string -> 'a key
+  val key : (string -> 'a) -> string list -> string -> 'a -> string -> 'a key
   val get : t -> 'a key -> 'a
   val value : 'a key -> string -> 'a
   type 'b editor
@@ -102,13 +98,8 @@ struct
   type t =
     (string * (string * Lexing.position)) list
 
-  type 'a concrete = {
-    of_string: string -> 'a;
-    to_string: 'a -> string;
-  }
-
   type 'a key = {
-    concrete: 'a concrete;
+    of_string: string -> 'a;
     path: string list;
     name: string;
     default: 'a;
@@ -129,7 +120,7 @@ struct
     { editor with editor_f }
 
   let key c p k def des = {
-    concrete = c;
+    of_string = c;
     path = p;
     name = k;
     default = def;
@@ -146,11 +137,11 @@ struct
     snd (List.find string_match conf)
 
   let use_default key =
-    M.default key.path key.name (key.concrete.to_string key.default);
+    M.default key.path key.name;
     key.default
 
   let positioned_value pos key text =
-    try key.concrete.of_string text
+    try key.of_string text
     with
     | Failure(mesg) ->
         M.value_error key.path key.name pos text mesg;
@@ -280,9 +271,9 @@ struct
     eprintf "Configuration_Map.uncaught_exn: %s: %s\n"
       (path_to_string path name) (Printexc.to_string exn)
 
-  let default path name value =
-    eprintf "Configuration_Map.default: %s: %s\n"
-      (path_to_string path name) value
+  let default path name =
+    eprintf "Configuration_Map.default: %s\n"
+      (path_to_string path name)
 
   let parse_error pos message =
     eprintf "Configuration_Map.parse_error: \
@@ -320,7 +311,7 @@ struct
     eprintf "Configuration_Map.uncaught_exn: %s: %s\n"
       (path_to_string path name) (Printexc.to_string exn)
 
-  let default path name value =
+  let default path name =
     ()
 
   let parse_error pos message =

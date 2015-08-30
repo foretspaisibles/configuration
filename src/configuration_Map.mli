@@ -22,20 +22,19 @@
 type t
 
 
-(** {6 Keys and value retrieval} *)
+(** {6 Keys and value retrieval}
 
-(** The type of configuration values concrete representations.
-    A concrete representation should use the [parse_error] function below
-    to advertise errors. *)
-type 'a concrete = {
-  of_string: string -> 'a;
-  to_string: 'a -> string;
-}
+    Configuration values are retrieved by a user defined function of
+    type [string -> 'a].  This function is expected to not have any
+    side-effect.  It must reports errors using the [Invalid_argument]
+    or [Failure] exceptions. This specification allows to use the
+    various [*_of_string] function in the standard library to examine
+    configuration values. *)
 
 (** The type of configuration keys.  A configuration key can be used
     to retrieve a configuration value. *)
 type 'a key = {
-  concrete: 'a concrete;
+  of_string: string -> 'a;
   path: string list;
   name: string;
   default: 'a;
@@ -44,7 +43,7 @@ type 'a key = {
 
 (** [key concrete path name default description] create a key
     out of its given parts. *)
-val key : ('a concrete) -> string list -> string -> 'a -> string -> 'a key
+val key : (string -> 'a) -> string list -> string -> 'a -> string -> 'a key
 
 (** Get the value associated with an key.  If there is no associated
     value, then the default value from the key is returned.
