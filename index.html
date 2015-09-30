@@ -1,0 +1,231 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Configuration by michipili</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/github-light.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Configuration</h1>
+        <p>Analyse configuration files in OCaml</p>
+
+        <p class="view"><a href="https://github.com/michipili/configuration">View the Project on GitHub <small>michipili/configuration</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/michipili/configuration/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/michipili/configuration/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/michipili/configuration">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a id="configuration-analyse-configuration-files" class="anchor" href="#configuration-analyse-configuration-files" aria-hidden="true"><span class="octicon octicon-link"></span></a>Configuration, analyse configuration files</h1>
+
+<p>The <strong>Configuration</strong> projects implements a library to analyse
+configuration files written in some flavour of the popular INI-file
+syntax.</p>
+
+<p><a href="https://travis-ci.org/michipili/configuration?branch=master"><img src="https://travis-ci.org/michipili/configuration.svg?branch=master" alt="Build Status"></a></p>
+
+<p>It supports comments, quoted section names, quoted configuration
+values and configuration values spreading over several lines.</p>
+
+<h2>
+<a id="configuration-parser" class="anchor" href="#configuration-parser" aria-hidden="true"><span class="octicon octicon-link"></span></a>Configuration Parser</h2>
+
+<p>The module <em>Configuration_Parser</em> implements a functional
+configuration parser.  This is actually a functor parametrised by a
+parser definition defining the behaviour of the parser. The parser
+definition has the following signature:</p>
+
+<div class="highlight highlight-source-ocaml"><pre><span class="pl-c">(** The input signature of the functor [Configuration_Parser.Make]. *)</span>
+<span class="pl-k">module type </span><span class="pl-en">Definition</span> <span class="pl-k">=</span>
+<span class="pl-k">sig</span>
+
+  <span class="pl-c">(** The type of functional parser state. *)</span>
+  <span class="pl-k">type</span> <span class="pl-k">t</span>
+
+  <span class="pl-c">(** Receive a comment. *)</span>
+  <span class="pl-k">val</span> <span class="pl-en">comment</span> : <span class="pl-k">excerpt</span> -&gt; <span class="pl-k">t</span> -&gt; <span class="pl-k">t</span>
+
+  <span class="pl-c">(** Receive a section specification. *)</span>
+  <span class="pl-k">val</span> <span class="pl-en">section</span> : <span class="pl-k">excerpt</span> <span class="pl-k">list</span> -&gt; <span class="pl-k">t</span> -&gt; <span class="pl-k">t</span>
+
+  <span class="pl-c">(** Receive a binding specificaton. *)</span>
+  <span class="pl-k">val</span> <span class="pl-en">binding</span> : <span class="pl-k">excerpt</span> -&gt; <span class="pl-k">excerpt</span> -&gt; <span class="pl-k">t</span> -&gt; <span class="pl-k">t</span>
+
+  <span class="pl-c">(** Receive a parser error. *)</span>
+  <span class="pl-k">val</span> <span class="pl-en">parse_error</span> : <span class="pl-k">pos</span> -&gt; <span class="pl-k">error</span> -&gt; <span class="pl-k">t</span> -&gt; <span class="pl-k">t</span>
+
+<span class="pl-k">end</span></pre></div>
+
+<p>A parser definition must define four events functionally editing a
+parser state. The <em>excerpt</em> state used in the signature above is a
+piece of text decorated with location information.</p>
+
+<h2>
+<a id="configuration-map" class="anchor" href="#configuration-map" aria-hidden="true"><span class="octicon octicon-link"></span></a>Configuration Map</h2>
+
+<p>A <em>configuration map</em> holds configuration <em>values</em> associated to a
+configuration <em>path</em>.  It is possible to read configuration maps from
+files, strings, or directly from a list of bindings:</p>
+
+<div class="highlight highlight-source-ocaml"><pre><span class="pl-c">(** Read configuration values from a file. *)</span>
+<span class="pl-k">val</span> <span class="pl-en">from_file</span> : <span class="pl-k">string</span> -&gt; <span class="pl-k">t</span>
+
+<span class="pl-c">(** Read configuration values from a string. *)</span>
+<span class="pl-k">val</span> <span class="pl-en">from_string</span> : <span class="pl-k">string</span> -&gt; <span class="pl-k">t</span>
+
+<span class="pl-c">(** Read configuration values from an alist. *)</span>
+<span class="pl-k">val</span> <span class="pl-en">from_alist</span> : ((<span class="pl-k">string</span> <span class="pl-k">list</span> <span class="pl-k">*</span> <span class="pl-k">string</span>) <span class="pl-k">*</span> <span class="pl-k">string</span>) <span class="pl-k">list</span> -&gt; <span class="pl-k">t</span></pre></div>
+
+<p>Configuration maps can also be extended and combined together:</p>
+
+<div class="highlight highlight-source-ocaml"><pre><span class="pl-c">(** The empty configuration map. *)</span>
+<span class="pl-k">val</span> <span class="pl-en">empty</span> : <span class="pl-k">t</span>
+
+<span class="pl-c">(** Add a configuration binding. *)</span>
+<span class="pl-k">val</span> <span class="pl-en">add</span> : (<span class="pl-k">string</span> <span class="pl-k">list</span> <span class="pl-k">*</span> <span class="pl-k">string</span>) -&gt; <span class="pl-k">string</span> -&gt; <span class="pl-k">t</span> -&gt; <span class="pl-k">t</span>
+
+<span class="pl-c">(** [merge a b] is a configuration map looking up values in [a] then</span>
+<span class="pl-c">    in [b]. *)</span>
+<span class="pl-k">val</span> <span class="pl-en">merge</span> : <span class="pl-k">t</span> -&gt; <span class="pl-k">t</span> -&gt; <span class="pl-k">t</span>
+
+<span class="pl-c">(** [override a b] a configuration map whose keys are the same as</span>
+<span class="pl-c">    [a] and the values are possibly overriden by those found in [b]. *)</span>
+<span class="pl-k">val</span> <span class="pl-en">override</span> : <span class="pl-k">t</span> -&gt; <span class="pl-k">t</span> -&gt; <span class="pl-k">t</span></pre></div>
+
+<p>The <em>merge</em> and <em>override</em> operations make it easy to combine
+site-wide and user-specific configurations and can be used to let the
+site administrator enforce some specific values.</p>
+
+<p>Retrieving individual values from a configuration map is accomplished
+using configuration keys:</p>
+
+<div class="highlight highlight-source-ocaml"><pre><span class="pl-c">(** The type of configuration keys.  A configuration key can be used</span>
+<span class="pl-c">    to retrieve a configuration value. *)</span>
+<span class="pl-k">type</span> <span class="pl-k">'a key </span>= {
+  <span class="pl-s1">concrete</span>: <span class="pl-k">'a</span> <span class="pl-k">concrete</span><span class="pl-k">;</span>
+  <span class="pl-s1">path</span>: <span class="pl-k">string</span> <span class="pl-k">list</span><span class="pl-k">;</span>
+  <span class="pl-s1">name</span>: <span class="pl-k">string</span><span class="pl-k">;</span>
+  <span class="pl-s1">default</span>: <span class="pl-k">'a</span><span class="pl-k">;</span>
+  <span class="pl-s1">description</span>: <span class="pl-k">string</span><span class="pl-k">;</span>
+}
+
+<span class="pl-c">(** The type of configuration values concrete representations.</span>
+<span class="pl-c">    A concrete representation should use the [parse_error] function below</span>
+<span class="pl-c">    to advertise errors. *)</span>
+<span class="pl-k">and</span> 'a concrete <span class="pl-k">=</span> {
+  <span class="pl-s1">of_string</span>: <span class="pl-k">string</span> -&gt; <span class="pl-k">'a</span><span class="pl-k">;</span>
+  <span class="pl-s1">to_string</span>: <span class="pl-k">'a</span> -&gt; <span class="pl-k">string</span><span class="pl-k">;</span>
+}
+
+<span class="pl-c">(** [key concrete path name default description] create a key</span>
+<span class="pl-c">    out of its given parts. *)</span>
+<span class="pl-k">val</span> <span class="pl-en">key</span> : (<span class="pl-k">'a</span> <span class="pl-k">concrete</span>) -&gt; <span class="pl-k">string</span> <span class="pl-k">list</span> -&gt; <span class="pl-k">string</span> -&gt; <span class="pl-k">'a</span> -&gt; <span class="pl-k">string</span> -&gt; <span class="pl-k">'a</span> <span class="pl-k">key</span>
+
+<span class="pl-c">(** Get the value associated with an key.  On error conditions, the</span>
+<span class="pl-c">    default value from the key is returned. *)</span>
+<span class="pl-k">val</span> <span class="pl-en">get</span> : <span class="pl-k">t</span> -&gt; <span class="pl-k">'a</span> <span class="pl-k">key</span> -&gt; <span class="pl-k">'a</span></pre></div>
+
+<p>Last, configuration maps support the definitions of <em>functional
+editors</em> which ease the editing of program parameters given a
+configuration map:</p>
+
+<div class="highlight highlight-source-ocaml"><pre><span class="pl-c">(** The abstract type of functional configuration editors,</span>
+<span class="pl-c">    functionally editing a value of type ['b]. *)</span>
+<span class="pl-k">type</span> <span class="pl-k">'b editor</span>
+
+<span class="pl-c">(** [editor key edit] create a functional configuration editor consuming</span>
+<span class="pl-c">    keys described by [key] and functionally editing a value of type</span>
+<span class="pl-c">    ['b] with [edit]. *)</span>
+<span class="pl-k">val</span> <span class="pl-en">editor</span> : <span class="pl-k">'a</span> <span class="pl-k">key</span> -&gt; (<span class="pl-k">'a</span> -&gt; <span class="pl-k">'b</span> -&gt; <span class="pl-k">'b</span>) -&gt; <span class="pl-k">'b</span> <span class="pl-k">editor</span>
+
+<span class="pl-c">(** Explicitely edit the given value with the provided editor. *)</span>
+<span class="pl-k">val</span> <span class="pl-en">apply</span> : <span class="pl-k">t</span> -&gt; <span class="pl-k">'b</span> <span class="pl-k">editor</span> -&gt; <span class="pl-k">'b</span> -&gt; <span class="pl-k">'b</span></pre></div>
+
+<p>The <em>apply</em> function can easily be combined with <em>List.fold_right</em>.</p>
+
+<p>The <em>xmap</em> function defines a natural isomorphism between editors of
+two different functional values, which can be used in combination with
+<a href="https://github.com/https://github.com/avsm/ocaml-lens">lenses</a>:</p>
+
+<div class="highlight highlight-source-ocaml"><pre><span class="pl-c">(** [xmap get set editor] convert an editor functionally modifying a</span>
+<span class="pl-c">    value of type ['b] in an editor functionally modifying a value of type</span>
+<span class="pl-c">    ['a].  This can be used in conjunction with lenses to separately</span>
+<span class="pl-c">    configure the different modules of an application. *)</span>
+<span class="pl-k">val</span> <span class="pl-en">xmap</span> : (<span class="pl-k">'a</span> -&gt; <span class="pl-k">'b</span>) -&gt; (<span class="pl-k">'b</span> -&gt; <span class="pl-k">'a</span> -&gt; <span class="pl-k">'a</span>) -&gt; <span class="pl-k">'b</span> <span class="pl-k">editor</span> -&gt; <span class="pl-k">'a</span> <span class="pl-k">editor</span></pre></div>
+
+<h2>
+<a id="free-software" class="anchor" href="#free-software" aria-hidden="true"><span class="octicon octicon-link"></span></a>Free software</h2>
+
+<p>It is written by Michael Grünewald and is distributed as a free
+software: copying it  and redistributing it is
+very much welcome under conditions of the <a href="http://www.cecill.info/licences/Licence_CeCILL-B_V1-en.html">CeCILL-B</a>
+licence agreement, found in the <a href="COPYING">COPYING</a> and
+<a href="COPYING-FR">COPYING-FR</a> files of the distribution.</p>
+
+<h2>
+<a id="setup-guide" class="anchor" href="#setup-guide" aria-hidden="true"><span class="octicon octicon-link"></span></a>Setup guide</h2>
+
+<p>It is easy to install <strong>Configuration</strong> using <strong>opam</strong> and its <em>pinning</em>
+feature.  In a shell visiting the repository, say</p>
+
+<div class="highlight highlight-text-shell-session"><pre>% <span class="pl-s1">opam pin add configuration <span class="pl-c1">.</span></span></pre></div>
+
+<p>It is also possible to install <strong>Configuration</strong> manually.
+The installation procedure is based on the portable build system
+<a href="https://github.com/michipili/bsdowl">BSD Owl Scripts</a> written for BSD Make.</p>
+
+<ol>
+<li>
+<p>Verify that prerequisites are installed:</p>
+
+<ul>
+<li>GNU Autoconf</li>
+<li>BSD Make</li>
+<li>OCaml</li>
+<li><a href="https://github.com/michipili/bsdowl/wiki/Install">BSD Owl</a></li>
+<li><a href="https://github.com/michipili/broken">Broken</a></li>
+</ul>
+</li>
+<li><p>Get the source, either by cloning the repository or by exploding a
+<a href="releases">distribution tarball</a>.</p></li>
+<li><p>Optionally run <code>autoconf</code> to produce a configuration script. This
+is only required if the script is not already present.</p></li>
+<li><p>Run <code>./configure</code>, you can choose the installation prefix with
+<code>--prefix</code>.</p></li>
+<li><p>Run <code>make build</code>.</p></li>
+<li><p>Optionally run <code>make test</code> to test your build.</p></li>
+<li><p>Finally run <code>make install</code>.</p></li>
+</ol>
+
+<p>Depending on how <strong>BSD Make</strong> is called on your system, you may need to
+replace <code>make</code> by <code>bsdmake</code> or <code>bmake</code> in steps 5, 6, and 7.
+The <strong>GNU Make</strong> program usually give up the ghost, croaking
+<code>*** missing separator. Stop.</code> when you mistakingly use it instead of
+<strong>BSD Make</strong>.</p>
+
+<p>Step 7 requires that you can <code>su -</code> if you are not already <code>root</code>.</p>
+
+<p>Michael Grünewald in Bonn, on August 15, 2015</p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/michipili">michipili</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
