@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link rel="next" href="Configuration_Parser.S.html">
+<link rel="Up" href="Configuration_Parser.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Configuration_Map" rel="Chapter" href="Configuration_Map.html">
+<link title="Configuration_Parser" rel="Chapter" href="Configuration_Parser.html"><title>Configuration library : Configuration_Parser.Definition</title>
+</head>
+<body>
+<div class="navbar">&nbsp;<a class="up" href="Configuration_Parser.html" title="Configuration_Parser">Up</a>
+&nbsp;<a class="post" href="Configuration_Parser.S.html" title="Configuration_Parser.S">Next</a>
+</div>
+<h1>Module type <a href="type_Configuration_Parser.Definition.html">Configuration_Parser.Definition</a></h1>
+
+<pre><span class="keyword">module type</span> Definition = <code class="code">sig</code> <a href="Configuration_Parser.Definition.html">..</a> <code class="code">end</code></pre><div class="info modtype top">
+The input signature of the functor <code class="code">Configuration_Parser.Make</code>.<br>
+</div>
+<hr width="100%">
+
+<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> </pre>
+<div class="info ">
+The type of functional parser state.<br>
+</div>
+
+
+<pre><span id="VALcomment"><span class="keyword">val</span> comment</span> : <code class="type"><a href="Configuration_Parser.html#TYPEexcerpt">Configuration_Parser.excerpt</a> -><br>       <a href="Configuration_Parser.Definition.html#TYPEt">t</a> -> <a href="Configuration_Parser.Definition.html#TYPEt">t</a></code></pre><div class="info ">
+Receive a comment.<br>
+</div>
+
+<pre><span id="VALsection"><span class="keyword">val</span> section</span> : <code class="type"><a href="Configuration_Parser.html#TYPEexcerpt">Configuration_Parser.excerpt</a> list -><br>       <a href="Configuration_Parser.Definition.html#TYPEt">t</a> -> <a href="Configuration_Parser.Definition.html#TYPEt">t</a></code></pre><div class="info ">
+Receive a section specification.<br>
+</div>
+
+<pre><span id="VALbinding"><span class="keyword">val</span> binding</span> : <code class="type"><a href="Configuration_Parser.html#TYPEexcerpt">Configuration_Parser.excerpt</a> -><br>       <a href="Configuration_Parser.html#TYPEexcerpt">Configuration_Parser.excerpt</a> -><br>       <a href="Configuration_Parser.Definition.html#TYPEt">t</a> -> <a href="Configuration_Parser.Definition.html#TYPEt">t</a></code></pre><div class="info ">
+Receive a binding specificaton.<br>
+</div>
+
+<pre><span id="VALparse_error"><span class="keyword">val</span> parse_error</span> : <code class="type"><a href="Configuration_Parser.html#TYPEpos">Configuration_Parser.pos</a> -><br>       <a href="Configuration_Parser.html#TYPEerror">Configuration_Parser.error</a> -><br>       <a href="Configuration_Parser.Definition.html#TYPEt">t</a> -> <a href="Configuration_Parser.Definition.html#TYPEt">t</a></code></pre><div class="info ">
+Receive a parser error.<br>
+</div>
+</body></html>

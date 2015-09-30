@@ -1,0 +1,140 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link rel="previous" href="Configuration_Map.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Configuration_Map" rel="Chapter" href="Configuration_Map.html">
+<link title="Configuration_Parser" rel="Chapter" href="Configuration_Parser.html"><title>Configuration library : Configuration_Parser</title>
+</head>
+<body>
+<div class="navbar"><a class="pre" href="Configuration_Map.html" title="Configuration_Map">Previous</a>
+&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;</div>
+<h1>Module <a href="type_Configuration_Parser.html">Configuration_Parser</a></h1>
+
+<pre><span class="keyword">module</span> Configuration_Parser: <code class="code">sig</code> <a href="Configuration_Parser.html">..</a> <code class="code">end</code></pre><div class="info module top">
+Parsing configuration files.
+<p>
+
+    Configuration files in the form of INI files that were common under
+    Microsoft systems have grown popular in the open source world, and are
+    used my some major pieces of software, like Subversion or GIT.
+<p>
+
+    We provide a parser to analyse these files.  This parser is a functor
+    parameterised by handlers for the events found in a configuration
+    file.  These events are of the following kinds:<ul>
+<li>comments;</li>
+<li>sections;</li>
+<li>bindings;</li>
+<li>parse errors.</li>
+</ul>
+<br>
+</div>
+<hr width="100%">
+
+<pre><span id="TYPEpos"><span class="keyword">type</span> <code class="type"></code>pos</span> = <code class="type">Lexing.position</code> </pre>
+<div class="info ">
+Position in an input stream.<br>
+</div>
+
+
+<pre><span id="TYPEexcerpt"><span class="keyword">type</span> <code class="type"></code>excerpt</span> </pre>
+<div class="info ">
+The type of excerpts.<br>
+</div>
+
+
+<pre><span id="VALstartpos"><span class="keyword">val</span> startpos</span> : <code class="type"><a href="Configuration_Parser.html#TYPEexcerpt">excerpt</a> -> <a href="Configuration_Parser.html#TYPEpos">pos</a></code></pre><div class="info ">
+The start position of an excerpt.<br>
+</div>
+
+<pre><span id="VALendpos"><span class="keyword">val</span> endpos</span> : <code class="type"><a href="Configuration_Parser.html#TYPEexcerpt">excerpt</a> -> <a href="Configuration_Parser.html#TYPEpos">pos</a></code></pre><div class="info ">
+The end position of an excerpt.<br>
+</div>
+
+<pre><span id="VALtext"><span class="keyword">val</span> text</span> : <code class="type"><a href="Configuration_Parser.html#TYPEexcerpt">excerpt</a> -> string</code></pre><div class="info ">
+The text of an excerpt.<br>
+</div>
+
+<pre><code><span id="TYPEerror"><span class="keyword">type</span> <code class="type"></code>error</span> = </code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTerror.Illegal_character"><span class="constructor">Illegal_character</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTerror.Illegal_escape_sequence"><span class="constructor">Illegal_escape_sequence</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTerror.Unterminated_string"><span class="constructor">Unterminated_string</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTerror.Expecting_binding"><span class="constructor">Expecting_binding</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTerror.Expecting_value"><span class="constructor">Expecting_value</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTerror.Expecting_path_elt"><span class="constructor">Expecting_path_elt</span></span></code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code><span class="keyword">|</span></code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTerror.Expecting_path_sep_or_term"><span class="constructor">Expecting_path_sep_or_term</span></span></code></td>
+
+</tr></table>
+
+<div class="info ">
+Parsing errors.<br>
+</div>
+
+
+<pre><span id="VALerror_to_string"><span class="keyword">val</span> error_to_string</span> : <code class="type"><a href="Configuration_Parser.html#TYPEerror">error</a> -> string</code></pre><div class="info ">
+Textual description of errors.<br>
+</div>
+
+<pre><span class="keyword">module type</span> <a href="Configuration_Parser.Definition.html">Definition</a> = <code class="code">sig</code> <a href="Configuration_Parser.Definition.html">..</a> <code class="code">end</code></pre><div class="info">
+The input signature of the functor <code class="code">Configuration_Parser.Make</code>.
+</div>
+
+<pre><span class="keyword">module type</span> <a href="Configuration_Parser.S.html">S</a> = <code class="code">sig</code> <a href="Configuration_Parser.S.html">..</a> <code class="code">end</code></pre><div class="info">
+The output signature of the functor <code class="code">Configuration_Parser.Make</code>.
+</div>
+
+<pre><span class="keyword">module</span> <a href="Configuration_Parser.Make.html">Make</a> <code class="code">(</code><code class="code">D</code><code class="code"> : </code><code class="type"><a href="Configuration_Parser.Definition.html">Definition</a></code><code class="code">) </code>: <code class="type"><a href="Configuration_Parser.S.html">S</a></code><code class="type"> 
+  with type t = D.t</code></pre><div class="info">
+Functor building an implementation of the configuration file
+    parser given a parser definition.
+</div>
+</body></html>

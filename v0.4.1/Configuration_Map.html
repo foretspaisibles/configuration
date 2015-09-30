@@ -1,0 +1,173 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link rel="next" href="Configuration_Parser.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Index of module types" rel=Appendix href="index_module_types.html">
+<link title="Configuration_Map" rel="Chapter" href="Configuration_Map.html">
+<link title="Configuration_Parser" rel="Chapter" href="Configuration_Parser.html"><link title="Keys and value retrieval" rel="Section" href="#6_Keysandvalueretrieval">
+<link title="Functional edition of program parameters" rel="Section" href="#6_Functionaleditionofprogramparameters">
+<link title="Operations on configuration maps" rel="Section" href="#6_Operationsonconfigurationmaps">
+<title>Configuration library : Configuration_Map</title>
+</head>
+<body>
+<div class="navbar">&nbsp;<a class="up" href="index.html" title="Index">Up</a>
+&nbsp;<a class="post" href="Configuration_Parser.html" title="Configuration_Parser">Next</a>
+</div>
+<h1>Module <a href="type_Configuration_Map.html">Configuration_Map</a></h1>
+
+<pre><span class="keyword">module</span> Configuration_Map: <code class="code">sig</code> <a href="Configuration_Map.html">..</a> <code class="code">end</code></pre><div class="info module top">
+Configuration maps.
+<p>
+
+    A configuration map holds a dictionary mapping configuration keys to
+    configuration values.  Values available in a configuration map can
+    retrieved based on a <i>key</i> or consumed by an <i>editor</i>.
+    Configuration maps can be combined together.<br>
+</div>
+<hr width="100%">
+
+<pre><span id="TYPEt"><span class="keyword">type</span> <code class="type"></code>t</span> </pre>
+<div class="info ">
+The abstract type of configuration maps.<br>
+</div>
+
+<br>
+<h6 id="6_Keysandvalueretrieval">Keys and value retrieval</h6>
+<p>
+
+    Configuration values are retrieved by a user defined function of
+    type <code class="code">string -&gt; 'a</code>.  This function is expected to not have any
+    side-effect.  It must reports errors using the <code class="code">Invalid_argument</code>
+    or <code class="code">Failure</code> exceptions. This specification allows to use the
+    various <code class="code">*_of_string</code> function in the standard library to examine
+    configuration values.<br>
+
+<pre><code><span id="TYPEkey"><span class="keyword">type</span> <code class="type">'a</code> key</span> = {</code></pre><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTkey.of_string">of_string</span>&nbsp;: <code class="type">string -> 'a</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTkey.path">path</span>&nbsp;: <code class="type">string list</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTkey.name">name</span>&nbsp;: <code class="type">string</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTkey.default">default</span>&nbsp;: <code class="type">'a</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span id="TYPEELTkey.description">description</span>&nbsp;: <code class="type">string</code>;</code></td>
+
+</tr></table>
+}
+
+<div class="info ">
+The type of configuration keys.  A configuration key can be used
+    to retrieve a configuration value.<br>
+</div>
+
+
+<pre><span id="VALkey"><span class="keyword">val</span> key</span> : <code class="type">(string -> 'a) -><br>       string list -> string -> 'a -> string -> 'a <a href="Configuration_Map.html#TYPEkey">key</a></code></pre><div class="info ">
+<code class="code">key concrete path name default description</code> create a key
+    out of its given parts.<br>
+</div>
+
+<pre><span id="VALget"><span class="keyword">val</span> get</span> : <code class="type"><a href="Configuration_Map.html#TYPEt">t</a> -> 'a <a href="Configuration_Map.html#TYPEkey">key</a> -> 'a</code></pre><div class="info ">
+Get the value associated with an key.  If there is no associated
+    value, then the default value from the key is returned.<br>
+<b>Raises</b> <code>Failure</code> if the value cannot be formatted.<br>
+</div>
+
+<pre><span id="VALvalue"><span class="keyword">val</span> value</span> : <code class="type">'a <a href="Configuration_Map.html#TYPEkey">key</a> -> string -> 'a</code></pre><div class="info ">
+<code class="code">value key text</code> get the value associated to <code class="code">text</code> as if it
+    were assigned to <code class="code">key</code>.<br>
+</div>
+<br>
+<h6 id="6_Functionaleditionofprogramparameters">Functional edition of program parameters</h6><br>
+
+<pre><span id="TYPEeditor"><span class="keyword">type</span> <code class="type">'b</code> editor</span> </pre>
+<div class="info ">
+The abstract type of functional configuration editors,
+    functionally editing a value of type <code class="code">'b</code>.<br>
+</div>
+
+
+<pre><span id="VALeditor"><span class="keyword">val</span> editor</span> : <code class="type">'a <a href="Configuration_Map.html#TYPEkey">key</a> -> ('a -> 'b -> 'b) -> 'b <a href="Configuration_Map.html#TYPEeditor">editor</a></code></pre><div class="info ">
+<code class="code">editor key edit</code> create a functional configuration editor consuming
+    keys described by <code class="code">key</code> and functionally editing a value of type
+    <code class="code">'b</code> with <code class="code">edit</code>.<br>
+</div>
+
+<pre><span id="VALxmap"><span class="keyword">val</span> xmap</span> : <code class="type">('a -> 'b) -><br>       ('b -> 'a -> 'a) -><br>       'b <a href="Configuration_Map.html#TYPEeditor">editor</a> -> 'a <a href="Configuration_Map.html#TYPEeditor">editor</a></code></pre><div class="info ">
+<code class="code">xmap get set editor</code> convert an editor functionally modifying a
+    value of type <code class="code">'b</code> in an editor functionally modifying a value of type
+    <code class="code">'a</code>.  This can be used in conjunction with lenses to separately
+    configure the different modules of an application.<br>
+</div>
+
+<pre><span id="VALapply"><span class="keyword">val</span> apply</span> : <code class="type"><a href="Configuration_Map.html#TYPEt">t</a> -> 'b <a href="Configuration_Map.html#TYPEeditor">editor</a> -> 'b -> 'b</code></pre><div class="info ">
+Explicitely edit the given value with the provided editor.<br>
+</div>
+<br>
+<h6 id="6_Operationsonconfigurationmaps">Operations on configuration maps</h6><br>
+
+<pre><span id="VALempty"><span class="keyword">val</span> empty</span> : <code class="type"><a href="Configuration_Map.html#TYPEt">t</a></code></pre><div class="info ">
+The empty configuration map.<br>
+</div>
+
+<pre><span id="VALadd"><span class="keyword">val</span> add</span> : <code class="type">string list * string -> string -> <a href="Configuration_Map.html#TYPEt">t</a> -> <a href="Configuration_Map.html#TYPEt">t</a></code></pre><div class="info ">
+Add a configuration binding.<br>
+</div>
+
+<pre><span id="VALmerge"><span class="keyword">val</span> merge</span> : <code class="type"><a href="Configuration_Map.html#TYPEt">t</a> -> <a href="Configuration_Map.html#TYPEt">t</a> -> <a href="Configuration_Map.html#TYPEt">t</a></code></pre><div class="info ">
+<code class="code">merge a b</code> a configuration map looking up values in <code class="code">a</code> then
+    in <code class="code">b</code>.<br>
+</div>
+
+<pre><span id="VALoverride"><span class="keyword">val</span> override</span> : <code class="type"><a href="Configuration_Map.html#TYPEt">t</a> -> <a href="Configuration_Map.html#TYPEt">t</a> -> <a href="Configuration_Map.html#TYPEt">t</a></code></pre><div class="info ">
+<code class="code">override a b</code> a configuration map whose keys are the same as
+    <code class="code">a</code> and the values are possibly overriden by those found in <code class="code">b</code>.<br>
+</div>
+
+<pre><span id="VALfrom_file"><span class="keyword">val</span> from_file</span> : <code class="type">string -> <a href="Configuration_Map.html#TYPEt">t</a></code></pre><div class="info ">
+Read configuration values from a file.<br>
+</div>
+
+<pre><span id="VALfrom_string"><span class="keyword">val</span> from_string</span> : <code class="type">string -> <a href="Configuration_Map.html#TYPEt">t</a></code></pre><div class="info ">
+Read configuration values from a string.<br>
+</div>
+
+<pre><span id="VALfrom_alist"><span class="keyword">val</span> from_alist</span> : <code class="type">((string list * string) * string) list -> <a href="Configuration_Map.html#TYPEt">t</a></code></pre><div class="info ">
+Read configuration values from an alist.<br>
+</div>
+
+<pre><span id="VALto_alist"><span class="keyword">val</span> to_alist</span> : <code class="type"><a href="Configuration_Map.html#TYPEt">t</a> -> ((string list * string) * string) list</code></pre><div class="info ">
+Convert configuration values to an alist.<br>
+</div>
+</body></html>
