@@ -342,7 +342,7 @@ let ident = quoted | ident_symbol
 let section_elt = quoted | section_symbol
 
 let section_begin = '['
-let section_sep = '.'
+let section_sep = [ '.' ' ' ]
 let section_end = ']'
 
 let equal = '='
@@ -355,7 +355,7 @@ rule normal c = parse
         normal c lexbuf }
   | '#'
       { comment c lexbuf }
-  | section_begin
+  | section_begin wsp*
       { PToken.section_begin c lexbuf }
   | ident
       { PToken.ident c lexbuf }
@@ -367,15 +367,13 @@ and comment c = parse
   | [ ^ '\n' ]*
       { PToken.comment c lexbuf }
 and section c = parse
-  | wsp
-      { section c lexbuf }
   | '"'
       { quoted_string PToken.quoted_section_elt c lexbuf }
   | section_sep
       { PToken.section_sep c lexbuf }
   | section_elt
       { PToken.section_elt c lexbuf }
-  | section_end
+  | wsp* section_end
       { PToken.section_end c lexbuf }
   | eof
       { PToken.eof c lexbuf }
