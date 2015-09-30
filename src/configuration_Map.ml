@@ -16,6 +16,19 @@ open Printf
 let path_to_string p k =
   String.concat "." (p @ [k])
 
+let path_of_string s =
+  let n = String.length s in
+  let rec loop acc i =
+    match String.index_from s i '.' with
+    | j -> loop (String.sub s i (j - i) :: acc) (j + 1)
+    | exception Not_found -> (String.sub s i (n - i)) :: acc
+  in
+  match loop [] 0 with
+  | [] -> ksprintf failwith "%s.path_of_string: %S" __MODULE__ s
+  | hd :: tl -> (List.rev tl, hd)
+
+
+
 (* Finite automatons recognising globbing patterns. *)
 module Glob =
 struct
@@ -86,6 +99,7 @@ sig
   val from_file : string -> t
   val from_string : string -> t
   val from_alist : ((string list * string) * string) list -> t
+  val to_alist : t -> ((string list * string) * string) list
 end
 
 (* We provide a simple implementation of the required associative
@@ -251,6 +265,9 @@ struct
   let from_alist a =
     let loop c (k,v) = add k v c in
     List.fold_left loop empty a
+
+  let to_alist a =
+    List.map (fun (k, (v,_)) -> (path_of_string k, v)) a
 end
 
 

@@ -102,3 +102,6 @@ val from_string : string -> t
 
 (** Read configuration values from an alist. *)
 val from_alist : ((string list * string) * string) list -> t
+
+(** Convert configuration values to an alist. *)
+val to_alist : t -> ((string list * string) * string) list
