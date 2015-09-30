@@ -3,8 +3,8 @@ configuration files in OCaml programs. It supports a variant of the
 popular INI-like syntax.
 
 {!modules:
-  ConfigurationMap
-  ConfigurationParser
+  Configuration_Map
+  Configuration_Parser
 }
 {1 Trailer}
 
