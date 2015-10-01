@@ -16,6 +16,19 @@ open Printf
 let path_to_string p k =
   String.concat "." (p @ [k])
 
+let path_of_string s =
+  let n = String.length s in
+  let rec loop acc i =
+    match String.index_from s i '.' with
+    | j -> loop (String.sub s i (j - i) :: acc) (j + 1)
+    | exception Not_found -> (String.sub s i (n - i)) :: acc
+  in
+  match loop [] 0 with
+  | [] -> ksprintf failwith "%s.path_of_string: %S" __MODULE__ s
+  | hd :: tl -> (List.rev tl, hd)
+
+
+
 (* Finite automatons recognising globbing patterns. *)
 module Glob =
 struct
@@ -54,25 +67,21 @@ sig
     Lexing.position -> string -> string -> unit
   val uncaught_exn : string list -> string ->
     Lexing.position -> string -> exn -> unit
-  val default : string list -> string -> string -> unit
+  val default : string list -> string -> unit
   val parse_error : Lexing.position -> string -> unit
 end
 
 module type S =
 sig
   type t
-  type 'a concrete = {
-    of_string: string -> 'a;
-    to_string: 'a -> string;
-  }
   type 'a key = {
-    concrete: 'a concrete;
+    of_string: string -> 'a;
     path: string list;
     name: string;
     default: 'a;
     description: string;
   }
-  val key : ('a concrete) -> string list -> string -> 'a -> string -> 'a key
+  val key : (string -> 'a) -> string list -> string -> 'a -> string -> 'a key
   val get : t -> 'a key -> 'a
   val value : 'a key -> string -> 'a
   type 'b editor
@@ -86,6 +95,7 @@ sig
   val from_file : string -> t
   val from_string : string -> t
   val from_alist : ((string list * string) * string) list -> t
+  val to_alist : t -> ((string list * string) * string) list
 end
 
 (* We provide a simple implementation of the required associative
@@ -102,13 +112,8 @@ struct
   type t =
     (string * (string * Lexing.position)) list
 
-  type 'a concrete = {
-    of_string: string -> 'a;
-    to_string: 'a -> string;
-  }
-
   type 'a key = {
-    concrete: 'a concrete;
+    of_string: string -> 'a;
     path: string list;
     name: string;
     default: 'a;
@@ -129,7 +134,7 @@ struct
     { editor with editor_f }
 
   let key c p k def des = {
-    concrete = c;
+    of_string = c;
     path = p;
     name = k;
     default = def;
@@ -146,11 +151,11 @@ struct
     snd (List.find string_match conf)
 
   let use_default key =
-    M.default key.path key.name (key.concrete.to_string key.default);
+    M.default key.path key.name;
     key.default
 
   let positioned_value pos key text =
-    try key.concrete.of_string text
+    try key.of_string text
     with
     | Failure(mesg) ->
         M.value_error key.path key.name pos text mesg;
@@ -251,6 +256,9 @@ struct
   let from_alist a =
     let loop c (k,v) = add k v c in
     List.fold_left loop empty a
+
+  let to_alist a =
+    List.map (fun (k, (v,_)) -> (path_of_string k, v)) a
 end
 
 
@@ -280,9 +288,9 @@ struct
     eprintf "Configuration_Map.uncaught_exn: %s: %s\n"
       (path_to_string path name) (Printexc.to_string exn)
 
-  let default path name value =
-    eprintf "Configuration_Map.default: %s: %s\n"
-      (path_to_string path name) value
+  let default path name =
+    eprintf "Configuration_Map.default: %s\n"
+      (path_to_string path name)
 
   let parse_error pos message =
     eprintf "Configuration_Map.parse_error: \
@@ -320,7 +328,7 @@ struct
     eprintf "Configuration_Map.uncaught_exn: %s: %s\n"
       (path_to_string path name) (Printexc.to_string exn)
 
-  let default path name value =
+  let default path name =
     ()
 
   let parse_error pos message =

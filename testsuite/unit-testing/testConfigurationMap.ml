@@ -26,22 +26,9 @@ let configuration2 = "maxusers = 10"
 
 let configuration3 = "="
 
-let concrete_string =
-  let id_string = (fun (x : string) -> x) in {
-    Configuration_Map.
-    of_string = id_string;
-    to_string = id_string;
-  }
-
-let concrete_int = {
-  Configuration_Map.
-  of_string = int_of_string;
-  to_string = string_of_int;
-}
-
 let test_multiple_lines () =
   let conf = Configuration_Map.from_string configuration1 in
-  let key = Configuration_Map.key concrete_string [] "message"
+  let key = Configuration_Map.key (fun x -> x) [] "message"
     "This is the default value of a message"
     "A message displayed to the user in various circonstances."
   in
@@ -56,9 +43,9 @@ let test_multiple_lines () =
 let test_override () =
   let conf =
     Configuration_Map.(override (from_string configuration1)
-		     (from_string configuration2))
+                         (from_string configuration2))
   in
-  let key = Configuration_Map.key concrete_int [] "maxusers"
+  let key = Configuration_Map.key int_of_string [] "maxusers"
     13
     "The maximal number of users"
   in
