@@ -23,6 +23,9 @@ remove: [
   ["ocamlfind" "remove" "configuration"]
   ["rm" "-rf" "%{share}%/doc/configuration"]
 ]
+available: [
+  ocaml-version >= "4.01.0"
+]
 depends: [
   "broken" {>= "0.4.1"}
   "bsdowl" {>= "3.0.0"}
